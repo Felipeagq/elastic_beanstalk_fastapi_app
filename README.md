@@ -1,5 +1,9 @@
 # Deploy FastAPI con Elastic Beanstalk
 
+https://testdriven.io/blog/fastapi-elastic-beanstalk/
+
+> autoScaling : https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.as.html
+
 # Que es Elastic Beanstalk
 AWS Elastic Beanstalk (EB) is an easy-to-use service for deploying and scaling web applications. It connects multiple AWS services, like compute instances (EC2), databases (RDS), load balancers (Application Load Balancer), and file storage systems (S3), to name a few. EB allows you to quickly develop and deploy your web application without thinking about the underlying infrastructure. It supports applications developed in Go, Java, .NET, Node.js, PHP, Python, and Ruby. EB also supports Docker if you need to configure your own software stack or deploy an application developed in a language (or version) that EB doesn't currently support.
 
@@ -142,7 +146,7 @@ option_settings:
   aws:elasticbeanstalk:application:environment:
     PYTHONPATH: "/var/app/current:$PYTHONPATH"
   aws:elasticbeanstalk:container:python:
-    WSGIPath: "main:app"
+    WSGIPath: "entrypoint:app"
   aws:elasticbeanstalk:environment:proxy:
     ProxyServer: apache
 ```
@@ -166,3 +170,66 @@ Create a new file called Procfile inside the project root:
 web: uvicorn entrypoint:app --host elastic-beanstalk-test-2-dev.us-east-2.elasticbeanstalk.com --port 8000
 ```
 
+
+# AWS RDS Postgres
+To set up Postgres for production, start by running the following command to open the AWS console:
+
+```
+$ eb console
+```
+Click "Configuration" on the left side bar, scroll down to "Database", and then click "Edit".
+
+Create a DB with the following settings and click on "Apply":
+
+- Engine: postgres
+- Engine version: 12.9 (older Postgres version since db.t2.micro is not available with 13.1+)
+- Instance class: db.t2.micro
+- Storage: 5 GB (should be more than enough)
+- Username: pick a username
+- Password: pick a strong password
+
+After the environment update is done, EB will automatically pass the following DB credentials to our FastAPI app:
+
+```
+RDS_DB_NAME
+RDS_USERNAME
+RDS_PASSWORD
+RDS_HOSTNAME
+RDS_PORT
+```
+
+# Environment Variables via EB CLI
+
+```
+$ eb setenv VARIABLE_NAME='variable value'
+```
+
+## Environment Variables via EB Console
+Enter the Elastic Beanstalk console via eb open. Navigate to "Configuration" > "Software" > "Edit". Then, scroll down to the "Environment properties".
+![Alt text](image-1.png)
+
+
+# Elastic Beanstalk CLI or Console
+```
+$ eb logs
+```
+
+```
+$ eb logs --cloudwatch-logs enable
+```
+
+
+# SSH into EC2 Instance
+To connect to an EC2 instance where your FastAPI application is running, run:
+
+```
+$ eb ssh
+```
+
+
+# Terminate EB
+To remove all the AWS resources we created throughout the tutorial, first terminate the Elastic Beanstalk environment:
+
+```
+$ eb terminate
+```
