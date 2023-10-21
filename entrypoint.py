@@ -16,6 +16,13 @@ def otra():
         "msg":"otra ruta"
     }
 
+
+@app.get("/alternativa")
+def otra():
+    return {
+        "msg":"ruta alternativa"
+    }
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app"
