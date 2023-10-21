@@ -9,6 +9,13 @@ def hello_check():
         "msg":"Hello world check"
     }
 
+
+@app.get("/otra")
+def otra():
+    return {
+        "msg":"otra ruta"
+    }
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app"
