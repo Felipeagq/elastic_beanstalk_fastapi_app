@@ -167,7 +167,7 @@ Create a new file called Procfile inside the project root:
 ```yml
 # Procfile
 
-web: uvicorn entrypoint:app --host elastic-beanstalk-test-2-dev.us-east-2.elasticbeanstalk.com --port 8000
+web: gunicorn entrypoint:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker
 ```
 
 
