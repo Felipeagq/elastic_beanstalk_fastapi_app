@@ -165,8 +165,6 @@ Since FastAPI doesn't support Gunicorn by itself, we'll have to modify our web p
 Uvicorn is the recommended ASGI web application server for FastAPI.
 Create a new file called Procfile inside the project root:
 ```yml
-# Procfile
-
 web: gunicorn entrypoint:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker
 ```
 
